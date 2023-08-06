@@ -9,12 +9,6 @@ import { Notification } from './Notification/Notification';
 import { NotificationFilter } from './NotificationFilter/NotificationFilter';
 
 
-
-function filterByString(field, filterValue) {
-  return field.toLowerCase().trim().includes(filterValue.toLowerCase().trim());
-};
-
-
 export class App extends Component {
   state = {
     contacts: [
@@ -26,56 +20,65 @@ export class App extends Component {
     filter: ''
   };
 
-  onLengthCheck = () =>{
-    return this.state.contacts.length
-  };
 
   onFormSubmitData = ({ name, number }) => {
     if (
       this.state.contacts.some(
         contact =>
-          contact.name.toLowerCase() === name.toLowerCase() ||
-          contact.number.toLowerCase() === number.toLowerCase()
-      )
-    ) {
-      alert(`${name} or entered number is already in contacts.`);
-      return;
-    }
+        contact.name.toLowerCase() === name.toLowerCase() ||
+        contact.number.toLowerCase() === number.toLowerCase()
+        )
+        ) {
+          alert(`${name} or entered number is already in contacts.`);
+          return;
+        }
 
     const newContact = {
       id: nanoid(),
       name,
       number,
     };
-
+    
     this.setState(prevState => ({
       contacts: [newContact, ...prevState.contacts],
     }));
   };
-
-
+  
+  
+  filterByString(field, filterValue) {
+    return field.toLowerCase().trim().includes(filterValue.toLowerCase().trim()
+    );
+  };
+  
+  
+  filteredContacts = () => {
+    return this.state.contacts.filter(contact =>
+      this.filterByString(contact.name, this.state.filter) ||
+      this.filterByString(contact.name, this.state.filter)
+    );
+  };
+    
+    
   onFilterChange = ({ target: { value } }) => {
     this.setState({
       filter: value,
     });
   };
+  
 
- 
   deleteContact = contactId => {
     this.setState({
       contacts: this.state.contacts.filter(contact => contact.id !== contactId),
     });
   };
+  
 
+  onLengthCheck = () =>{
+    return this.state.contacts.length
+  };
 
 
   render(){
-    const filteredContacts = this.state.contacts.filter(
-      contact =>
-        filterByString(contact.name, this.state.filter) ||
-        filterByString(contact.number, this.state.filter)
-    );
-
     return (
       <Section>
         <Containers title={'Phonebook'}>
@@ -91,9 +94,9 @@ export class App extends Component {
           {this.onLengthCheck() === 0 ? (
             <Notification message="There are no contatcs in your list, sorry"/>): (
             <>
-              {filteredContacts.length > 0 ? (
-                <Contacts 
-                  contacts={filteredContacts}
+              {this.filteredContacts().length > 0 ? (
+                <Contacts
+                  contacts={this.filteredContacts()}
                   deleteContact={this.deleteContact}
                 />) : (<NotificationFilter notification="No contacts found that match the filter"/>)
               }
