@@ -6,6 +6,8 @@ import {Form} from './Form/Form';
 import { Filter } from './Filter/Filter';
 import {Contacts} from './Contacts/Contacts';
 import { Notification } from './Notification/Notification';
+import { NotificationFilter } from './NotificationFilter/NotificationFilter';
+
 
 
 function filterByString(field, filterValue) {
@@ -73,6 +75,7 @@ export class App extends Component {
         filterByString(contact.name, this.state.filter) ||
         filterByString(contact.number, this.state.filter)
     );
+
     return (
       <Section>
         <Containers title={'Phonebook'}>
@@ -85,10 +88,16 @@ export class App extends Component {
             />
         </Containers>
         <Containers title={'Contacts'}>
-          {this.onLengthCheck() === 0 ? (<Notification message="There are no contatcs in your list, sorry"/>): ( <Contacts 
-            contacts={filteredContacts}
-            deleteContact={this.deleteContact}
-            />
+          {this.onLengthCheck() === 0 ? (
+            <Notification message="There are no contatcs in your list, sorry"/>): (
+            <>
+              {filteredContacts.length > 0 ? (
+                <Contacts 
+                  contacts={filteredContacts}
+                  deleteContact={this.deleteContact}
+                />) : (<NotificationFilter notification="No contacts found that match the filter"/>)
+              }
+            </>
           )}
         </Containers>
       </Section>
